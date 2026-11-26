@@ -33,7 +33,31 @@ def train_word2vec(
         >>> 'nlp' in model.wv
         True
     """
-    pass
+    if not isinstance(sentences, list):
+        raise TypeError("Sentences must be a list")
+    if not sentences:
+        raise ValueError("Sentences cannot be empty")
+    if any(not isinstance(sentence, list) for sentence in sentences):
+        raise TypeError("Sentences must be a list of lists")
+    if any(not sentence for sentence in sentences):
+        raise ValueError("Sentences cannot contain empty lists")
+    if any(
+        not isinstance(word, str)
+        for sentence in sentences
+        for word in sentence
+    ):
+        raise ValueError("All words must be strings")
+    if vector_size < 1 or window < 1 or min_count < 1 or workers < 1:
+        raise ValueError("Word2Vec parameters must be positive")
+
+    model = Word2Vec(
+        sentences=sentences,
+        vector_size=vector_size,
+        window=window,
+        min_count=min_count,
+        workers=workers,
+        seed=42
+    )
     return model
 
 
@@ -61,9 +85,16 @@ def find_similar_words(model: Word2Vec, word: str, topn: int = 10) -> List[Tuple
         >>> len(similar) <= 2
         True
     """
-    pass
+    if not isinstance(model, Word2Vec):
+        raise TypeError("Model must be a Word2Vec model")
+    if not isinstance(word, str):
+        raise TypeError("Word must be a string")
+    if not isinstance(topn, int) or topn < 1:
+        raise ValueError("topn must be a positive integer")
+    if word not in model.wv:
+        raise KeyError(f"Word '{word}' not in vocabulary")
 
-    return model.wv.most_similar(word, topn=topn)
+    return [(similar_word, float(score)) for similar_word, score in model.wv.most_similar(word, topn=topn)]
 
 
 if __name__ == "__main__":

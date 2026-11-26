@@ -22,7 +22,13 @@ def clean_and_tokenize(text: str) -> List[str]:
         >>> clean_and_tokenize("Hello, World!")
         ['hello', 'world']
     """
-    pass
+    if not isinstance(text, str):
+        raise TypeError("Input text must be a string")
+    if not text.strip():
+        raise ValueError("Input text cannot be empty")
+
+    cleaned = re.sub(r"[^\w\s]", " ", text.lower(), flags=re.UNICODE)
+    tokens = cleaned.split()
     return tokens
 
 
@@ -32,4 +38,3 @@ if __name__ == "__main__":
         "then tokenizes it into individual words."
     )
     print(clean_and_tokenize(example_text))
-
